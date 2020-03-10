@@ -8,14 +8,16 @@ Vue.config.productionTip = false;
 
 Vue.use(VueRouter);
 
+const token = "v3AqJhzni7HLy5MJ8rUQGAx61xCyxbCySRcIzgsC";
+
 const router = new VueRouter({
   mode: 'history',
   base: __dirname,
   routes: [
     { path: '/', name: 'home', component: HomePage },
-    { path: '/rovers/curiosity/images', name: 'curiosity', component: ImagePage, props: {rover: "curiosity"} },
-    { path: '/rovers/spirit/images', name: 'spirit', component: ImagePage, props: {rover: "spirit"} },
-    { path: '/rovers/opportunity/images', name: 'opportunity', component: ImagePage, props: {rover: "opportunity"}  }
+    { path: '/rovers/curiosity/images', name: 'curiosity', component: ImagePage, props: {rover: "curiosity", token: token} },
+    { path: '/rovers/spirit/images', name: 'spirit', component: ImagePage, props: {rover: "spirit", token: token} },
+    { path: '/rovers/opportunity/images', name: 'opportunity', component: ImagePage, props: {rover: "opportunity", token: token}  }
   ]
 });
 
