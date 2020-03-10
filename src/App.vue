@@ -1,34 +1,39 @@
 <template>
   <div id="app">
     <Navbar />
-    <div style="padding-top: 50px;">
-      <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="backyboi">
+      <router-view />
     </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 import Navbar from "./components/Navbar";
 
 export default {
   name: 'App',
   components: {
-    Navbar,
-    HelloWorld
+    Navbar
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  background-image: linear-gradient(90deg, #000000, #fff);
-  height: 200vh;
-  display: flex;
-}
+  @import url('https://fonts.googleapis.com/css?family=Dosis&display=swap');
+  #app {
+    font-family: 'Dosis', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+  }
+
+  .backyboi {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    color: white;
+    background-color: #100507;
+  }
 </style>
