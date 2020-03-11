@@ -25,9 +25,20 @@
             token: String
         },
         mounted() {
-            axios.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/${this.rover}/photos/?earth_date=2015-6-3&api_key=${this.token}`)
+            axios.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/${this.rover}/photos/?earth_date=2015-6-2&api_key=${this.token}`)
                 .then(response => response.data.photos.forEach( (photo) => {
-                        this.images.push(photo.img_src);
+
+                    //remove images of low resolution
+                    let img = new Image();
+                    img.onload = () => {
+                        if (img.height < 300 || img.width < 300) {
+                            let key = this.images.findIndex(url => url === photo.img_src);
+                            this.images.splice(key,1);
+                        }
+                    };
+                    img.src = photo.img_src;
+
+                    this.images.push(photo.img_src);
                 }))
         }
     }
@@ -35,13 +46,12 @@
 
 <style scoped>
     .container {
-        margin: 0 auto;
+        margin: 70px auto 0;
         max-width: 1200px;
-        padding: 0 1rem;
     }
 
     .container img {
-
+        max-width: 100%;
     }
 
     .grid {
@@ -50,7 +60,7 @@
     }
 
     .cell {
-        height: 40vh;
+        max-width: 50%;
         flex-grow: 1;
     }
 
