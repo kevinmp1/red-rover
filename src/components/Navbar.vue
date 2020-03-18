@@ -36,6 +36,7 @@
         align-items: center;
         line-height: 50px;
         font-size: x-large;
+        z-index: 1000;
     }
 
     .bar div.options {

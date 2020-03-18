@@ -1,5 +1,8 @@
 <template>
     <div class="container">
+        <div class="date-slider">
+            <Slider :start="start" :end="end" v-on:date-change="debounceEvent"></Slider>
+        </div>
         <div class="grid">
             <template v-for="(image, key) in images">
                 <img :src="image" :key="key" v-if="image"/>
@@ -10,17 +13,25 @@
 
 <script>
     import * as axios from "axios";
+    import Slider from "./Slider";
+    import _ from 'lodash'; 
 
     export default {
         name: "ImagePage",
+        components: {
+            Slider
+        },
         data () {
             return {
-                images: []
+                images: [],
+                debounce:  _.debounce( function(event){this.loadPhotos(event)}, 2000)
             }
         },
         props: {
             rover: String,
-            token: String
+            token: String,
+            start: Date,
+            end: Date
         },
         methods: {
             shuffle: function (array) {
@@ -39,26 +50,35 @@
                     array[randomIndex] = temporaryValue;
                 }
                 return array;
-            }
-        },
-        mounted() {
-            axios.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/${this.rover}/photos/?earth_date=2015-6-2&api_key=${this.token}`)
+            },
+            debounceEvent(event) {
+                this.debounce(event);
+            },
+            loadPhotos(date) {
+                this.images = [];
+                axios.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/${this.rover}/photos/?earth_date=${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}&api_key=${this.token}`)
                 .then(response => {
                     response.data.photos.forEach( (photo) => {
-                        //remove images of low resolution
-                        let img = new Image();
-                        img.onload = () => {
-                            if (img.height < 300 || img.width < 300) {
-                                let key = this.images.findIndex(url => url === photo.img_src);
-                                this.images.splice(key,1);
-                            }
-                        };
-                        img.src = photo.img_src;
+                        this.removeLowResPhotos(photo)
 
                         this.images.push(photo.img_src);
                     });
                     this.images = this.shuffle(this.images);
                 });
+            },
+            removeLowResPhotos(photo) {
+                let img = new Image();
+                img.onload = () => {
+                            if (img.height < 300 || img.width < 300) {
+                                let key = this.images.findIndex(url => url === photo.img_src); //find index by url
+                                this.images.splice(key,1); //remove index from image array
+                            }
+                        };
+                img.src = photo.img_src;
+            }
+        },
+        mounted() {
+            this.loadPhotos(this.start);
         }
     }
 </script>
@@ -66,19 +86,49 @@
 <style scoped>
     .container {
         margin: 70px auto 0;
-        /*max-width: 1200px;*/
+        width: 100%;
+    }
+
+    .date-slider {
+        margin: -40px 0 30px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .container img {
-        /*max-width: 100%;*/
         width: 400px;
         margin: 0 1rem 1rem 0;
         display: inline-block;
+        border-radius: .25rem;
+        filter: drop-shadow(5px 5px 10px black)
     }
 
     .grid {
         columns: 4 200px;
         column-gap: 1rem;
+    }
+
+    @media only screen and (max-width: 1650px) {
+        .grid {
+            columns: 3 200px;
+        }
+    }
+
+    @media only screen and (max-width: 1250px) {
+        .grid {
+            columns: 2 200px;
+        }
+    }
+
+    @media only screen and (max-width: 900px) {
+        .grid {
+            display: flex;
+            flex-direction: column;
+        }
+        .container img {
+            margin-bottom: 25px;
+        }
     }
 
 </style>
