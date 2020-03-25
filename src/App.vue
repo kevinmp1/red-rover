@@ -2,7 +2,7 @@
   <div id="app">
     <Navbar />
     <div class="backyboi">
-      <router-view />
+      <router-view :key="$route.path"/>
     </div>
   </div>
 </template>
