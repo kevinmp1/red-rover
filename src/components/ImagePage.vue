@@ -8,23 +8,29 @@
                 <img :src="image" :key="key" v-if="image"/>
             </template>
         </div>
+        <div v-if="loading" class="loading-container"> 
+            <Loading />
+        </div>
     </div>
 </template>
 
 <script>
     import * as axios from "axios";
     import Slider from "./Slider";
+    import Loading from "./Loading";
     import _ from 'lodash'; 
 
     export default {
         name: "ImagePage",
         components: {
-            Slider
+            Slider,
+            Loading
         },
         data () {
             return {
                 images: [],
-                debounce:  _.debounce( function(event){this.loadPhotos(event)}, 2000)
+                debounce:  _.debounce( function(event){this.loadPhotos(event)}, 2000),
+                loading: false
             }
         },
         props: {
@@ -56,6 +62,7 @@
             },
             loadPhotos(date) {
                 this.images = [];
+                this.loading = true;
                 axios.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/${this.rover}/photos/?earth_date=${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}&api_key=${this.token}`)
                 .then(response => {
                     response.data.photos.forEach( (photo) => {
@@ -64,6 +71,7 @@
                         this.images.push(photo.img_src);
                     });
                     this.images = this.shuffle(this.images);
+                    this.loading = false;
                 });
             },
             removeLowResPhotos(photo) {
