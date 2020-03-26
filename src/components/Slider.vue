@@ -4,7 +4,7 @@
             <span>{{formatDate(start)}}</span><span>{{formatDate(end)}}</span>
         </div>
         <div class="range-container"> 
-            <input type="range" class="slideyboi" min="0" :max="difference" v-model="inputNum" v-on:input="$emit('date-change', picked)"/>
+            <input type="range" class="slideyboi" min="0" step="1" :max="difference" v-model="inputNum" v-on:input="$emit('date-change', picked)"/>
         </div>
         <span class="slide-label">{{formatDate(picked)}}</span>
     </div>
