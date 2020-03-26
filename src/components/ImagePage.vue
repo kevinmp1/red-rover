@@ -3,18 +3,21 @@
         <div class="date-slider">
             <Slider :start="start" :end="end" v-on:date-change="debounceEvent"></Slider>
         </div>
-        <div v-if="noImages" class="nothing"> 
-            <img src="@/assets/Marvin_the_Martian.png" alt="No Images" class="uh-oh" />
-            <span>Nothing to see here</span>
-        </div>
-        <div class="grid" v-infinite-scroll="loadPhotos" infinite-scroll-disabled="loading" infinite-scroll-distance="200" infinite-scroll-throttle-delay="200">
+        <div class="grid">
             <template v-for="(image, key) in images">
-                <img :src="image" :key="key" v-if="image"/>
+                    <img :src="image" :key="key" v-if="image"/>
             </template>
         </div>
-        <div v-if="loading" class="loading-container"> 
-            <Loading />
-        </div>
+        <infinite-loading @infinite="loadPhotos"  ref="infiniteLoading">
+            <div slot="no-results" class="nothing"> 
+                <img src="@/assets/Marvin_the_Martian.png" alt="No Images" class="uh-oh" />
+                <span>Nothing to see here</span>
+            </div>
+            <div slot="spinner" class="loading-container"> 
+                <Loading />
+            </div>
+            <div slot="no-more">No more images ヽ༼ຈʖ̯ຈ༽ﾉ</div>
+        </infinite-loading>
     </div>
 </template>
 
@@ -23,15 +26,15 @@
     import Slider from "./Slider";
     import Loading from "./Loading";
     import _ from 'lodash';
-    import infiniteScroll from 'vue-infinite-scroll'; 
+    import InfiniteLoading from 'vue-infinite-loading';
 
     export default {
         name: "ImagePage",
         components: {
             Slider,
-            Loading
+            Loading,
+            InfiniteLoading
         },
-        directives: {infiniteScroll},
         data () {
             return {
                 images: [],
@@ -39,12 +42,10 @@
                         this.images = [];
                         this.page = 1;
                         this.selectedDate = event;
-                        this.loadPhotos();
+                        this.$refs.infiniteLoading.stateChanger.reset();
                     }, 2000),
-                loading: true,
                 page: 1,
-                selectedDate: Date,
-                noImages: false
+                selectedDate: Date
             }
         },
         props: {
@@ -56,8 +57,6 @@
         methods: {
             shuffle: function (array, shuffleStart) {
                 let currentIndex = array.length, temporaryValue, randomIndex;
-                console.log("start index: " + currentIndex);
-                console.log("shuffleStart: " + shuffleStart)
 
                 // While there remain elements to shuffle...
                 while (shuffleStart !== currentIndex) {
@@ -76,47 +75,43 @@
             debounceEvent(event) {
                 this.debounce(event);
             },
-            loadPhotos() {
+            loadPhotos($state) {
                 const date = this.selectedDate;
                 const sizeBeforeLoad = this.images.length;
-                if (this.page !== -1) {
-                    this.loading = true;
-                    axios.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/${this.rover}/photos` +
-                                `?earth_date=${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}&api_key=${this.token}&page=${this.page}`)
-                    .then(response => {
-                        if (response.data.photos.length) {
-                            response.data.photos.forEach( (photo) => {
-                                this.removeLowResPhotos(photo)
-
-                                this.images.push(photo.img_src);
-                            });
-                            this.images = this.shuffle(this.images, sizeBeforeLoad);
-                            this.loading = false;
-                            this.page +=1;
-                        } else {
-                            if(this.images.length === 0) {
-                                this.noImages = true;
-                            }
-                            this.loading = false;
-                            this.page = -1;
+                axios.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/${this.rover}/photos` +
+                            `?earth_date=${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}&api_key=${this.token}&page=${this.page}`)
+                .then(response => {
+                    if (response.data.photos.length) {
+                        response.data.photos.forEach( (photo) => {
+                            this.images.push(photo.img_src);
+                        });
+                        this.images = this.shuffle(this.images, sizeBeforeLoad);
+                        this.page +=1;
+                        this.removeLowResPhotos(response.data.photos);
+                        $state.loaded();
+                    } else {
+                        if(!this.images.length) {
+                            $state.reset();
                         }
-                    });
-                }
+                        $state.complete();
+                    }
+                });
             },
-            removeLowResPhotos(photo) {
-                let img = new Image();
-                img.onload = () => {
-                            if (img.height < 300 || img.width < 300) {
-                                let key = this.images.findIndex(url => url === photo.img_src); //find index by url
-                                this.images.splice(key,1); //remove index from image array
-                            }
-                        };
-                img.src = photo.img_src;
+            removeLowResPhotos(photos) {
+                photos.forEach( (photo) => {
+                    let img = new Image();
+                    img.onload = () => {
+                                if (img.height < 300 || img.width < 300) {
+                                    let key = this.images.findIndex(url => url === photo.img_src); //find index by url
+                                    this.images.splice(key,1); //remove index from image array
+                                }
+                            };
+                    img.src = photo.img_src;
+                });
             }
         },
         mounted() {
             this.selectedDate = this.start;
-            this.loadPhotos(this.start);
         }
     }
 </script>
@@ -148,6 +143,7 @@
         display: flex;
         flex-flow: row wrap;
         margin-left: 25px;
+        margin-bottom: 50px;
     }
 
     .uh-oh {
@@ -165,6 +161,11 @@
 
     .nothing span {
         font-size: x-large;
+    }
+
+    .loading-container {
+        height: 200px !important;
+        width: 100% !important;
     }
 
 </style>

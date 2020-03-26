@@ -73,6 +73,7 @@
         position: relative;
         width: 160px;
         height: 160px;
+        margin-left: -80px;
     }
 
     .svg-wrapper svg {
