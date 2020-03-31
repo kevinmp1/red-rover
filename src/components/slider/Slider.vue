@@ -30,8 +30,8 @@
         computed: {
             dates: function() {
                 let dates = [];
-                for (var i = 1; i <= this.difference; i++) {
-                    dates.push(new Date(this.start.getYear(), this.start.getMonth(), i));
+                for (var i = this.start.getDate(); i <= this.start.getDate() + this.difference; i++) {
+                    dates.push(new Date(this.start.getFullYear(), this.start.getMonth(), i));
                 }
                 return dates;
             },
