@@ -23,8 +23,8 @@
 
 <script>
     import * as axios from "axios";
-    import Slider from "./Slider";
-    import Loading from "./Loading";
+    import Slider from "../slider/Slider";
+    import Loading from "../general/Loading";
     import _ from 'lodash';
     import InfiniteLoading from 'vue-infinite-loading';
 

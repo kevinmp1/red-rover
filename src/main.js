@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
-import ImagePage from "./components/ImagePage";
-import HomePage from "./components/HomePage";
+import ImagePage from "./components/imagepage/ImagePage";
+import HomePage from "./components/homepage/HomePage";
 
 Vue.config.productionTip = false;
 
