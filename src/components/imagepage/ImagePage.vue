@@ -55,8 +55,18 @@
             end: Date
         },
         methods: {
-            shuffle: function (array, shuffleStart) {
+            shuffle: function (originalArray, shuffleStart) {
+                let array = originalArray.slice();
                 let currentIndex = array.length, temporaryValue, randomIndex;
+
+                currentIndex -= 1;
+
+                //ensure at least one switch happens
+                randomIndex = Math.floor(Math.random() * currentIndex - 1) + shuffleStart;
+                currentIndex -= 1;
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
 
                 // While there remain elements to shuffle...
                 while (shuffleStart !== currentIndex) {
@@ -87,7 +97,7 @@
                         });
                         this.images = this.shuffle(this.images, sizeBeforeLoad);
                         this.page +=1;
-                        this.removeLowResPhotos(response.data.photos);
+                        this.processPhotos(response.data.photos);
                         $state.loaded();
                     } else {
                         if(!this.images.length) {
@@ -97,17 +107,21 @@
                     }
                 });
             },
-            removeLowResPhotos(photos) {
+            processPhotos(photos) {
                 photos.forEach( (photo) => {
-                    let img = new Image();
-                    img.onload = () => {
-                                if (img.height < 300 || img.width < 300) {
-                                    let key = this.images.findIndex(url => url === photo.img_src); //find index by url
-                                    this.images.splice(key,1); //remove index from image array
-                                }
-                            };
-                    img.src = photo.img_src;
+                    this.removeLowResPhoto(photo.img_src);
                 });
+            },
+            removeLowResPhoto(src) {
+                let img = new Image();
+                img.onload = () => {
+                    if (img.height < 300 || img.width < 300) {
+                        let key = this.images.findIndex(url => url === src); //find index by url
+                        this.images.splice(key,1); //remove index from image array
+                    }
+                };
+                img.src = src;
+                return img;
             }
         },
         mounted() {
