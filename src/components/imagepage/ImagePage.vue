@@ -59,26 +59,26 @@
                 let array = originalArray.slice();
                 let currentIndex = array.length, temporaryValue, randomIndex;
 
-                currentIndex -= 1;
+                currentIndex -= 1; //lower index to base 0
 
                 //ensure at least one switch happens
-                randomIndex = Math.floor(Math.random() * currentIndex - 1) + shuffleStart;
-                currentIndex -= 1;
+                randomIndex = Math.floor(Math.random() * (currentIndex - 1)) + shuffleStart;
                 temporaryValue = array[currentIndex];
                 array[currentIndex] = array[randomIndex];
                 array[randomIndex] = temporaryValue;
+                currentIndex -= 1;
 
                 // While there remain elements to shuffle...
                 while (shuffleStart !== currentIndex) {
 
                     // Pick a remaining element...
                     randomIndex = Math.floor(Math.random() * currentIndex) + shuffleStart;
-                    currentIndex -= 1;
 
                     // And swap it with the current element.
                     temporaryValue = array[currentIndex];
                     array[currentIndex] = array[randomIndex];
                     array[randomIndex] = temporaryValue;
+                    currentIndex -= 1;
                 }
                 return array;
             },

@@ -44,6 +44,8 @@ describe("image page", () => {
             it("should change only part of the array", () => {
                 const wrapper = shallowMount(ImagePage);
                 const newArray = wrapper.vm.shuffle(array, 2);
+                console.table(array)
+                console.table(newArray);
 
                 for (let i = 0; i < 2; i++) {
                     expect(newArray[i]).toEqual(array[i]);
@@ -92,7 +94,7 @@ describe("image page", () => {
           const img = wrapper.vm.removeLowResPhoto("src/assets/rover-minier.png");
           img.height = 299;
           img.width = 300;
-          img.onload();
+          img.onload(); //manually call onload since image never truly loads
           expect(wrapper.vm.images).toEqual([]);
         });
 
@@ -105,7 +107,7 @@ describe("image page", () => {
             const img = wrapper.vm.removeLowResPhoto("src/assets/rover-minier.png");
             img.height = 400;
             img.width = 400;
-            img.onload();
+            img.onload(); //manually call onload since image never truly loads
             expect(wrapper.vm.images).toEqual(photos);
         });
 
