@@ -39,10 +39,7 @@
             return {
                 images: [],
                 debounce:  _.debounce( function(event){
-                        this.images = [];
-                        this.page = 1;
-                        this.selectedDate = event;
-                        this.$refs.infiniteLoading.stateChanger.reset();
+                        this.reset(event);
                     }, 2000),
                 page: 1,
                 selectedDate: Date
@@ -122,6 +119,12 @@
                 };
                 img.src = src;
                 return img;
+            },
+            reset(event) {
+                this.images = [];
+                this.page = 1;
+                this.selectedDate = event;
+                this.$refs.infiniteLoading.stateChanger.reset();
             }
         },
         mounted() {
