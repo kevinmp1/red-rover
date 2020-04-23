@@ -8,7 +8,7 @@
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "start": "npm run serve",
-    "test": "jest --config=./jest.config.js --coverage"
+    "test": "jest --config=./jest.config.js"
   },
   "dependencies": {
     "axios": "^0.19.2",

@@ -1,6 +1,7 @@
 /* eslint-env jest */
 import { shallowMount } from "@vue/test-utils";
 import ImagePage from "./ImagePage";
+import FullscreenImage from "./modal/FullscreenImage";
 import axios from "axios";
 import Slider from "../slider/Slider";
 jest.mock("axios");
@@ -341,6 +342,29 @@ describe("image page", () => {
 
             expect(mockDebounceEvent).toHaveBeenCalledTimes(1);
             expect(mockDebounceEvent).toHaveBeenCalledWith(date);
+        });
+    });
+
+    describe("fullscreen", () => {
+        it("should set fullscreen to true and set url", async () => {
+            const wrapper = shallowMount(ImagePage);
+            wrapper.setData({ images: ["blah"] });
+            await wrapper.vm.$nextTick();
+
+            wrapper.find('img').trigger('click');
+
+            expect(wrapper.vm.fullscreen).toBe(true);
+            expect(wrapper.vm.fullscreenImg).toEqual("blah");
+        });
+
+        it("should set fullscreen to false", async () => {
+            const wrapper = shallowMount(ImagePage);
+            wrapper.setData({ fullscreen: true });
+            await wrapper.vm.$nextTick();
+
+            wrapper.find(FullscreenImage).vm.$emit('close-fullscreen');
+
+            expect(wrapper.vm.fullscreen).toBe(false);
         });
     });
 });

@@ -3,9 +3,14 @@
         <div class="date-slider">
             <Slider :start="start" :end="end" v-on:date-change="debounceEvent"></Slider>
         </div>
+        <transition name="fade">
+            <div v-if="fullscreen" class="bring-to-front">
+                <FullscreenImage :img="fullscreenImg" @close-fullscreen="fullscreen = false"/>
+            </div>
+        </transition>
         <div class="grid">
             <template v-for="(image, key) in images">
-                    <img :src="image" :key="key" v-if="image"/>
+                    <img :src="image" :key="key" v-if="image" @click="displayFullscreen(image)"/>
             </template>
         </div>
         <infinite-loading @infinite="loadPhotos"  ref="infiniteLoading">
@@ -30,8 +35,9 @@
     import Loading from "../general/Loading";
     import _ from 'lodash';
     import InfiniteLoading from 'vue-infinite-loading';
-    import BackToTop from 'vue-backtotop'
-    import Rocket from '../general/Rocket'
+    import BackToTop from 'vue-backtotop';
+    import Rocket from '../general/Rocket';
+    import FullscreenImage from './modal/FullscreenImage';
 
     export default {
         name: "ImagePage",
@@ -40,7 +46,8 @@
             Loading,
             InfiniteLoading,
             BackToTop,
-            Rocket
+            Rocket,
+            FullscreenImage
         },
         data () {
             return {
@@ -49,7 +56,9 @@
                         this.reset(event);
                     }, 2000),
                 page: 1,
-                selectedDate: Date
+                selectedDate: Date,
+                fullscreen: false,
+                fullscreenImg: ""
             }
         },
         props: {
@@ -132,6 +141,10 @@
                 this.page = 1;
                 this.selectedDate = event;
                 this.$refs.infiniteLoading.stateChanger.reset();
+            },
+            displayFullscreen(image) {
+                this.fullscreenImg = image;
+                this.fullscreen = true;
             }
         },
         mounted() {
@@ -142,12 +155,12 @@
 
 <style scoped>
     .container {
-        margin: 70px auto 0;
+        margin: 50px auto 0;
         width: 100%;
     }
 
     .date-slider {
-        margin: -40px 0 30px 0;
+        margin: -20px 0 30px 0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -158,6 +171,7 @@
         height: 500px;
         width: auto;
         margin: 0 25px 25px 0;
+        cursor: pointer;
         object-fit: cover;
         border-radius: .25rem;
         filter: drop-shadow(5px 5px 10px black)
@@ -204,6 +218,18 @@
 
     .btn-to-top:focus {
         outline: none;
+    }
+
+    .bring-to-front {
+        position: relative;
+        z-index: 1005;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s;
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0;
     }
 
 </style>
