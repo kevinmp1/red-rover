@@ -18,6 +18,9 @@
             </div>
             <div slot="no-more">No more images ヽ༼ຈʖ̯ຈ༽ﾉ</div>
         </infinite-loading>
+        <back-to-top bottom="50px" right="50px">
+            <button type="button" class="btn btn-info btn-to-top"><Rocket/></button>
+        </back-to-top>
     </div>
 </template>
 
@@ -27,13 +30,17 @@
     import Loading from "../general/Loading";
     import _ from 'lodash';
     import InfiniteLoading from 'vue-infinite-loading';
+    import BackToTop from 'vue-backtotop'
+    import Rocket from '../general/Rocket'
 
     export default {
         name: "ImagePage",
         components: {
             Slider,
             Loading,
-            InfiniteLoading
+            InfiniteLoading,
+            BackToTop,
+            Rocket
         },
         data () {
             return {
@@ -183,6 +190,20 @@
     .loading-container {
         height: 200px !important;
         width: 100% !important;
+    }
+
+    .btn-to-top {
+        width: 50px;
+        padding: 0;
+        height: 50px;
+        border-radius: 100%;
+        border: none;
+        background: none;
+        cursor: pointer;
+    }
+
+    .btn-to-top:focus {
+        outline: none;
     }
 
 </style>
